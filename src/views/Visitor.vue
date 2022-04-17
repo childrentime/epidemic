@@ -25,7 +25,7 @@
               ></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary">查询</el-button>
+              <el-button type="primary" @click="handleSearch">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -104,8 +104,10 @@
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-              <el-button>取 消</el-button>
-              <el-button type="primary">确 定</el-button>
+              <el-button @click="resetForm('form')">取 消</el-button>
+              <el-button type="primary" @click="handleSubmit('form')"
+                >确 定</el-button
+              >
             </div>
           </el-dialog>
         </div>
@@ -115,15 +117,34 @@
           </el-table-column>
           <el-table-column prop="phone" label="电话" width="180">
           </el-table-column>
-          <el-table-column prop="address" label="地址" width="200">
+          <el-table-column label="地址" width="200">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px">{{
+                ctx[scope.row.address.split(",")[0]] +
+                ctx[scope.row.address.split(",")[1]] +
+                ctx[scope.row.address.split(",")[2]]
+              }}</span>
+            </template>
           </el-table-column>
-          <el-table-column prop="visitAddress" label="访问地址" width="200">
+          <el-table-column label="访问地址" width="200">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px">{{
+                ctx[scope.row.visitAddress.split(",")[0]] +
+                ctx[scope.row.visitAddress.split(",")[1]] +
+                ctx[scope.row.visitAddress.split(",")[2]]
+              }}</span>
+            </template>
           </el-table-column>
           <el-table-column prop="startTime" label="开始时间" width="200">
           </el-table-column>
           <el-table-column prop="endTime" label="结束时间" width="200">
           </el-table-column>
-          <el-table-column fixed="right" prop="in" label="准许进入" width="100">
+          <el-table-column fixed="right" label="准许进入" width="100">
+            <template slot-scope="scope">
+              <span style="margin-left: 10px">{{
+                scope.row.approve ? "已审批" : "待审批"
+              }}</span>
+            </template>
           </el-table-column>
         </el-table>
       </section>
@@ -132,11 +153,13 @@
 </template>
 
 <script>
-import { regionData } from "element-china-area-data";
+import { regionData, CodeToText } from "element-china-area-data";
+const prefix = "/api/visitor";
 export default {
   name: "Visitor",
   data() {
     return {
+      ctx: CodeToText,
       options: regionData,
       dialogFormVisible: false,
       formLabelWidth: "100px",
@@ -167,27 +190,56 @@ export default {
         ],
       },
 
-      tableData: [
-        {
-          name: "张三",
-          phone: "13415067713",
-          address: "湖北省武汉市洪山区",
-          visitAddress: "河北省唐山市路南区",
-          startTime: "2021-11-24 00:00:00",
-          endTime: "2021-11-25 00:00:00",
-          in: "不允许",
-        },
-        {
-          name: "李四",
-          phone: "13775367713",
-          address: "山西省太原市小店区",
-          visitAddress: "河北省唐山市路南区",
-          startTime: "2021-11-24 00:00:00",
-          endTime: "2021-11-25 00:00:00",
-          in: "允许",
-        },
-      ],
+      tableData: [],
     };
+  },
+  created() {
+    this.getVisitor();
+  },
+  methods: {
+    getVisitor() {
+      this.$axios.get(`${prefix}/getAll`).then((data) => {
+        const { data: tableData } = data.data;
+        this.tableData = tableData;
+      });
+    },
+    handleSearch() {
+      const { name, phone } = this.formInline;
+      this.$axios
+        .get(`${prefix}/getAll?name=${name}&phone=${phone}`)
+        .then((data) => {
+          const { data: tableData } = data.data;
+          this.tableData = tableData;
+        });
+    },
+    handleSubmit: function (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const { name, phone, address, visitAddress, startTime, endTime } =
+            this.form;
+          this.$axios
+            .post(
+              `${prefix}/add?name=${name}&phone=${phone}&address=${address}&startTime=${startTime}&endTime=${endTime}&visitAddress=${visitAddress}`
+            )
+            .then(() => {
+              this.getVisitor();
+              this.resetForm(formName);
+              this.$message({
+                showClose: true,
+                message: "添加成功",
+                type: "success",
+                duration: 2000,
+              });
+            });
+        } else {
+          return false;
+        }
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+      this.dialogFormVisible = false;
+    },
   },
 };
 </script>

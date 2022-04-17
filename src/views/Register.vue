@@ -58,6 +58,7 @@
 </template>
 
 <script>
+const prefix = "/api/login";
 export default {
   name: "Register",
   data() {
@@ -92,7 +93,27 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log("valid");
+          const { phone, password, card, gender, name } = this.form;
+          this.$axios
+            .post(
+              `${prefix}/userRegister?phone=${phone}&password=${password}&card=${card}&gender=${gender}&name=${name}`
+            )
+            .then((data) => {
+              const { code } = data.data;
+              if (code === 200) {
+                this.$message({
+                  showClose: true,
+                  message: "注册成功",
+                  type: "success",
+                });
+              } else {
+                this.$message({
+                  showClose: true,
+                  message: "注册失败，手机号重复",
+                  type: "error",
+                });
+              }
+            });
         } else {
           return false;
         }

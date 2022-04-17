@@ -24,8 +24,8 @@
           </el-form-item>
           <el-form-item prop="role">
             <el-radio-group v-model="form.role">
-              <el-radio label="居民"></el-radio>
-              <el-radio label="管理员"></el-radio>
+              <el-radio label="0">居民</el-radio>
+              <el-radio label="1">管理员</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-form>
@@ -52,6 +52,7 @@
 </template>
 
 <script>
+const prefix = "/api/login";
 export default {
   name: "Login",
   data() {
@@ -59,7 +60,7 @@ export default {
       form: {
         phone: "",
         password: "",
-        role: "",
+        role: "0",
       },
       rules: {
         phone: [{ required: true, message: "请输入手机号", trigger: "blur" }],
@@ -74,7 +75,24 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log("valid");
+          const { phone, password, role } = this.form;
+          if (role === "1") {
+            this.$axios
+              .post(`${prefix}/adminLogin?id=${phone}&password=${password}`)
+              .then((data) => {
+                const { code, data: id } = data.data;
+                if (code === 200) {
+                  sessionStorage.setItem("adminId", id);
+                  this.$router.push("/admin/user");
+                } else {
+                  this.$message({
+                    showClose: true,
+                    message: "密码错误",
+                    type: "error",
+                  });
+                }
+              });
+          }
         } else {
           return false;
         }
