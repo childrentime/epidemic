@@ -5,6 +5,7 @@ import router from "./router";
 import ElementUI from "element-ui";
 import "./styles.scss";
 import "./main.css";
+import "bytemd/dist/index.min.css";
 
 Vue.use(ElementUI);
 

@@ -8,6 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@bytemd/plugin-gfm": "^1.13.1",
+    "@bytemd/vue": "^1.13.1",
     "core-js": "^3.6.5",
     "element-china-area-data": "^5.0.2",
     "element-ui": "^2.3.6",

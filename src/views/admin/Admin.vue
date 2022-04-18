@@ -8,7 +8,7 @@
     <div class="main">
       <div class="slider">
         <el-menu
-          :default-active="$route.path.substring(8)"
+          :default-active="$route.path.substring(7)"
           class="list"
           light
           router
@@ -37,6 +37,9 @@ export default {
   name: "Admin",
   data() {
     return {};
+  },
+  created() {
+    console.log(this.$route.path.substring(7));
   },
 
   methods: {},
@@ -93,8 +96,8 @@ export default {
   border: none;
 }
 .el-menu-item.is-active {
-  color: #303133;
-  background-color: rgba(82, 186, 181, 0.38);
+  color: white !important;
+  background-color: #20a0ff !important;
 }
 
 .item {
