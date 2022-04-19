@@ -149,6 +149,7 @@ export default {
       this.dialogFormVisible = true;
       this.form.title = row.title;
       this.form.content = row.content;
+      this.value = row.content;
     },
     handleDelete(index, row) {
       const id = row.id;

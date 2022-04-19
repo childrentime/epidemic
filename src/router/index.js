@@ -8,11 +8,12 @@ import User from "../views/admin/user/User.vue";
 import Visit from "../views/admin/visitor/Visitor.vue";
 import Resident from "../views/resident/Resident.vue";
 import Announcement from "../views/resident/announcement/Announcement.vue";
-import Exception from "../views/resident/exception/Exception.Vue";
+import Exception from "../views/resident/exception/Exception.vue";
 import Access from "../views/resident/acc/Access.vue";
 import Shopping from "../views/resident/shopping/Shopping.vue";
 import AdminAnnouncement from "../views/admin/announcement/Announcement.vue";
 import Id from "../views/resident/announcement/Id.vue";
+import AdminException from "../views/admin/exception/Exception.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -51,6 +52,11 @@ const routes = [
         component: AdminAnnouncement,
         name: "公告管理",
       },
+      {
+        path: "exception",
+        component: AdminException,
+        name: "上报管理",
+      },
     ],
   },
   {
@@ -66,7 +72,7 @@ const routes = [
       {
         path: "exception",
         component: Exception,
-        name: "异常上报",
+        name: "上报",
       },
       {
         path: "access",
