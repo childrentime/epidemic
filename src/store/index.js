@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    id: "",
+    id: sessionStorage.getItem("userId"),
   },
   mutations: {
     assign(state, id) {

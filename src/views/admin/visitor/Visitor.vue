@@ -159,9 +159,9 @@ export default {
         endTime: [
           { required: true, message: "请选择结束时间", trigger: "blur" },
         ],
-        address: [{ required: true, message: "请输入容量", trigger: "blur" }],
+        address: [{ required: true, message: "请输入地址", trigger: "blur" }],
         visitAddress: [
-          { required: true, message: "请输入容量", trigger: "blur" },
+          { required: true, message: "请输入访问地址", trigger: "blur" },
         ],
       },
 
@@ -180,6 +180,7 @@ export default {
     },
     handleAuth(index, row) {
       this.$axios.post(`${prefix}/auth?id=${row.id}`).then(() => {
+        this.getVisitor();
         this.$message({
           showClose: true,
           message: "审批成功",
@@ -187,7 +188,6 @@ export default {
           duration: 2000,
         });
       });
-      this.getVisitor();
     },
     handleSearch() {
       const { name, phone } = this.formInline;

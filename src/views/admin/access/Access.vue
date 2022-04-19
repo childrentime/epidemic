@@ -16,46 +16,49 @@
     </div>
     <div>
       <el-dialog title="编辑" :visible.sync="dialogFormVisible">
-        <el-form ref="form" :model="form" label-position="top">
+        <el-form :model="form" ref="form" :rules="rules">
           <el-form-item
-            label="是否有发热、咳嗽、咽痛、嗅(味)觉减退、腹泻等症状："
+            label="外出时间"
+            :label-width="formLabelWidth"
+            prop="outTime"
           >
-            <el-radio-group v-model="form.first">
-              <el-radio label="false">无</el-radio>
-              <el-radio label="true">有</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="是否自行服用过退烧药：">
-            <el-radio-group v-model="form.second">
-              <el-radio label="false">无</el-radio>
-              <el-radio label="true">有</el-radio>
-            </el-radio-group>
+            <el-date-picker
+              v-model="form.outTime"
+              type="datetime"
+              value-format="yyyy-MM-dd hh:mm:ss"
+              placeholder="选择外出时间"
+            >
+            </el-date-picker>
           </el-form-item>
           <el-form-item
-            label="是否有近期中高风险地区或境外旅游史或途径中高风险地区："
+            label="返回时间"
+            :label-width="formLabelWidth"
+            prop="inTime"
           >
-            <el-radio-group v-model="form.third">
-              <el-radio label="false">无</el-radio>
-              <el-radio label="true">有</el-radio>
-            </el-radio-group>
+            <el-date-picker
+              v-model="form.inTime"
+              type="datetime"
+              value-format="yyyy-MM-dd hh:mm:ss"
+              placeholder="选择返回时间"
+            >
+            </el-date-picker>
           </el-form-item>
-          <el-form-item label="是否有中高风险地区和入境人员接触史：">
-            <el-radio-group v-model="form.four">
-              <el-radio label="false">无</el-radio>
-              <el-radio label="true">有</el-radio>
-            </el-radio-group>
+
+          <el-form-item
+            label="外出原因"
+            :label-width="formLabelWidth"
+            prop="reason"
+          >
+            <el-input v-model="form.reason" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="是否有冷链或进口商品物流工作经历或人员接触史：">
-            <el-radio-group v-model="form.five">
-              <el-radio label="false">无</el-radio>
-              <el-radio label="true">有</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="近期有无参加聚集活动">
-            <el-radio-group v-model="form.six">
-              <el-radio label="false">无</el-radio>
-              <el-radio label="true">有</el-radio>
-            </el-radio-group>
+
+          <el-form-item
+            label="外出地址"
+            :label-width="formLabelWidth"
+            prop="address"
+          >
+            <el-cascader size="large" :options="options" v-model="form.address">
+            </el-cascader>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -74,62 +77,34 @@
             </el-table-column>
             <el-table-column prop="phone" label="电话" width="180">
             </el-table-column>
-            <el-table-column
-              prop="first"
-              label="是否有发热、咳嗽、咽痛、嗅(味)觉减退、腹泻等症状："
-              width="180"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.first ? "有" : "无" }}
-              </template>
+            <el-table-column prop="outTime" label="外出时间" width="180">
             </el-table-column>
-            <el-table-column
-              prop="second"
-              label="是否自行服用过退烧药："
-              width="180"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.second ? "有" : "无" }}
-              </template>
+            <el-table-column prop="inTime" label="返回时间" width="180">
             </el-table-column>
 
-            <el-table-column
-              prop="third"
-              label="是否有近期中高风险地区或境外旅游史或途径中高风险地区："
-              width="180"
-            >
+            <el-table-column prop="reason" label="外出原因" width="180">
+            </el-table-column>
+            <el-table-column prop="address" label="外出地址" width="180">
               <template slot-scope="scope">
-                {{ scope.row.third ? "有" : "无" }}
+                {{
+                  ctx[scope.row.address.split(",")[0]] +
+                  ctx[scope.row.address.split(",")[1]] +
+                  ctx[scope.row.address.split(",")[2]]
+                }}
               </template>
             </el-table-column>
-            <el-table-column
-              prop="four"
-              label="是否有中高风险地区和入境人员接触史："
-              width="180"
-            >
+            <el-table-column label="准许进入" width="200">
               <template slot-scope="scope">
-                {{ scope.row.four ? "有" : "无" }}
+                <span style="margin-left: 10px; margin-right: 20px">{{
+                  scope.row.approve ? "已审批" : "待审批"
+                }}</span>
+                <el-button
+                  type="primary"
+                  size="small"
+                  @click="handleAuth(scope.$index, scope.row)"
+                  >审批</el-button
+                >
               </template>
-            </el-table-column>
-            <el-table-column
-              prop="five"
-              label="是否有冷链或进口商品物流工作经历或人员接触史："
-              width="180"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.five ? "有" : "无" }}
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="six"
-              label="近期有无参加聚集活动"
-              width="180"
-            >
-              <template slot-scope="scope">
-                {{ scope.row.six ? "有" : "无" }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="createTime" label="上报时间" width="180">
             </el-table-column>
 
             <el-table-column label="操作" width="200">
@@ -156,11 +131,14 @@
 </template>
 
 <script>
-const prefix = "/api/unusual";
+import { regionData, CodeToText } from "element-china-area-data";
+const prefix = "/api/access";
 export default {
-  name: "AdminException",
+  name: "AdminAccess",
   data() {
     return {
+      ctx: CodeToText,
+      options: regionData,
       id: "",
       formLabelWidth: "80px",
       dialogFormVisible: false,
@@ -170,20 +148,32 @@ export default {
       },
       tableData: [],
       form: {
-        first: "false",
-        second: "false",
-        third: "false",
-        four: "false",
-        five: "false",
-        six: "false",
+        inTime: "",
+        outTime: "",
+        address: [],
+        reason: "",
+      },
+      rules: {
+        inTime: [
+          { required: true, message: "请选择返回时间", trigger: "blur" },
+        ],
+        outTime: [
+          { required: true, message: "请选择外出时间", trigger: "blur" },
+        ],
+        address: [
+          { required: true, message: "请输外出入地址", trigger: "blur" },
+        ],
+        reason: [
+          { required: true, message: "请输入外出原因", trigger: "blur" },
+        ],
       },
     };
   },
   created() {
-    this.getExceptions();
+    this.getAccesss();
   },
   methods: {
-    getExceptions(name = "", phone = "") {
+    getAccesss(name = "", phone = "") {
       this.$axios
         .get(`${prefix}/getAll?name=${name}&phone=${phone}`)
         .then((data) => {
@@ -193,17 +183,24 @@ export default {
     },
     onSubmit() {
       const { name, phone } = this.formInline;
-      this.getExceptions(name, phone);
+      this.getAccesss(name, phone);
+    },
+    handleAuth(index, row) {
+      this.$axios.post(`${prefix}/auth?id=${row.id}`).then(() => {
+        this.$message({
+          type: "success",
+          message: "审批成功!",
+        });
+        this.getAccesss();
+      });
     },
     handleEdit(index, row) {
       this.id = row.id;
       this.dialogFormVisible = true;
-      this.form.first = String(row.first);
-      this.form.second = String(row.second);
-      this.form.third = String(row.third);
-      this.form.four = String(row.four);
-      this.form.five = String(row.five);
-      this.form.six = String(row.six);
+      this.form.inTime = row.inTime;
+      this.form.outTime = row.outTime;
+      this.form.address = row.address.split(",");
+      this.form.reason = row.reason;
     },
     handleDelete(index, row) {
       const id = row.id;
@@ -218,7 +215,7 @@ export default {
               type: "success",
               message: "删除成功!",
             });
-            this.getExceptions();
+            this.getAccesss();
           });
         })
         .catch(() => {
@@ -231,11 +228,11 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          const { first, second, third, four, five, six } = this.form;
+          const { inTime, outTime, reason, address } = this.form;
           const id = this.id;
           this.$axios
             .post(
-              `${prefix}/update?id=${id}&first=${first}&second=${second}&third=${third}&four=${four}&five=${five}&six=${six}`
+              `${prefix}/update?id=${id}&inTime=${inTime}&outTime=${outTime}&address=${address}&reason=${reason}`
             )
             .then((data) => {
               const { code } = data.data;
@@ -245,7 +242,7 @@ export default {
                   message: "修改成功",
                   type: "success",
                 });
-                this.getExceptions();
+                this.getAccesss();
                 this.resetForm(formName);
               } else {
                 this.$message({

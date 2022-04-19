@@ -14,6 +14,7 @@ import Shopping from "../views/resident/shopping/Shopping.vue";
 import AdminAnnouncement from "../views/admin/announcement/Announcement.vue";
 import Id from "../views/resident/announcement/Id.vue";
 import AdminException from "../views/admin/exception/Exception.vue";
+import AdminAccess from "../views/admin/access/Access.vue"
 Vue.use(VueRouter);
 
 const routes = [
@@ -56,6 +57,11 @@ const routes = [
         path: "exception",
         component: AdminException,
         name: "上报管理",
+      },
+      {
+        path: "access",
+        component: AdminAccess,
+        name: "出入管理",
       },
     ],
   },
